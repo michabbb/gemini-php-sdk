@@ -28,6 +28,7 @@ final class GenerationConfig implements Arrayable
         public readonly ?float $temperature = null,
         public readonly ?float $topP = null,
         public readonly ?int $topK = null,
+        public readonly ?string $responseMimeType = null,
     ) {
     }
 
@@ -40,6 +41,7 @@ final class GenerationConfig implements Arrayable
             'temperature' => $this->temperature,
             'topP' => $this->topP,
             'topK' => $this->topK,
+            'responseMimeType' => $this->responseMimeType,
         ];
     }
 }
