@@ -14,21 +14,24 @@ final class Part implements Arrayable
     /**
      * @param  string|null  $text  Inline text.
      * @param  Blob|null  $inlineData  Inline media bytes.
+     * @param  FileData|null  $fileData  URI based data.
      */
     public function __construct(
         public readonly ?string $text = null,
         public readonly ?Blob $inlineData = null,
+        public readonly ?FileData $fileData = null,
     ) {
     }
 
     /**
-     * @param  array{ text: ?string, inlineData: ?array{ mimeType: string, data: string } }  $attributes
+     * @param  array{ text?: string, inlineData?: array{ mimeType: string, data: string }, fileData?: array{ mimeType?: string, fileUri: string } }  $attributes
      */
     public static function from(array $attributes): self
     {
         return new self(
             text: $attributes['text'] ?? null,
-            inlineData: isset($attributes['inlineData']) ? Blob::from($attributes['inlineData']) : null
+            inlineData: isset($attributes['inlineData']) ? Blob::from($attributes['inlineData']) : null,
+            fileData: isset($attributes['fileData']) ? FileData::from($attributes['fileData']) : null
         );
     }
 
@@ -41,7 +44,11 @@ final class Part implements Arrayable
         }
 
         if ($this->inlineData !== null) {
-            $data['inlineData'] = $this->inlineData;
+            $data['inlineData'] = $this->inlineData->toArray();
+        }
+
+        if ($this->fileData !== null) {
+            $data['fileData'] = $this->fileData->toArray();
         }
 
         return $data;

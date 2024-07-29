@@ -21,15 +21,17 @@ class GenerateContentRequest extends Request
     protected Method $method = Method::POST;
 
     /**
-     * @param  array<string|Blob|array<string|Blob>|Content>  $parts
-     * @param  array<SafetySetting>  $safetySettings
+     * @param array<string|Blob|array<string|Blob>|Content> $parts
+     * @param array<SafetySetting> $safetySettings
      */
     public function __construct(
-        protected readonly string $model,
-        protected readonly array $parts,
-        protected readonly array $safetySettings = [],
-        protected readonly ?GenerationConfig $generationConfig = null
-    ) {
+        protected readonly string            $model,
+        protected readonly array             $parts,
+        protected readonly array             $safetySettings = [],
+        protected readonly ?GenerationConfig $generationConfig = null,
+        protected readonly ?string           $systemInstruction = null,
+    )
+    {
 
     }
 
@@ -43,15 +45,15 @@ class GenerateContentRequest extends Request
      *
      * @return array<string, mixed>
      */
-    protected function defaultBody(): array
+    public function defaultBody(): array
     {
         return [
-            'contents' => array_map(
-                static fn (Content $content): array => $content->toArray(),
+            'contents'         => array_map(
+                static fn(Content $content): array => $content->toArray(),
                 $this->partsToContents(...$this->parts)
             ),
-            'safetySettings' => array_map(
-                static fn (SafetySetting $setting): array => $setting->toArray(),
+            'safetySettings'   => array_map(
+                static fn(SafetySetting $setting): array => $setting->toArray(),
                 $this->safetySettings ?? []
             ),
             'generationConfig' => $this->generationConfig?->toArray(),

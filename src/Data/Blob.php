@@ -19,7 +19,7 @@ final class Blob implements Arrayable
      * @param  string  $data  Raw bytes for media formats. A base64-encoded string.
      */
     public function __construct(
-        public readonly MimeType $mimeType,
+        public readonly MimeType|string $mimeType,
         public readonly string $data,
     ) {
     }

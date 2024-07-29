@@ -34,11 +34,13 @@ final class Content implements Arrayable
         return match (true) {
             $part instanceof self => $part,
             $part instanceof Blob => new Content(parts: [new Part(inlineData: $part)], role: $role),
+            $part instanceof FileData => new Content(parts: [new Part(fileData: $part)], role: $role),
             is_array($part) => new Content(
                 parts: array_map(
                     callback: static fn ($subPart) => match (true) {
                         is_string($subPart) => new Part(text: $subPart),
                         $subPart instanceof Blob => new Part(inlineData: $subPart),
+                        $subPart instanceof FileData => new Part(fileData: $subPart),
                     },
                     array: $part,
                 ),

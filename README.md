@@ -1,3 +1,39 @@
+### This is a fork of https://github.com/google-gemini-php/client
+
+### features added:
+
+- added `withBaseUrl` to set individual URLs like `https://generativelanguage.googleapis.com/v1beta/`
+- added `withGenerationConfig` to force JSON output
+- added `uploadFile` to upload files to the Gemini API (to reference them in the prompt) 
+
+### Examples:
+```php
+$client     = GeminiClient::factory()
+                      ->withApiKey(config('gemini.API_KEY'))
+                      ->withBaseUrl(config('gemini.API_BASE_URL'))
+                      ->make();
+$result     = $client
+                    ->generativeModel('gemini-1.5-flash')
+                    ->withGenerationConfig(new GenerationConfig(responseMimeType: 'application/json'))
+                    ->generateContent($promptText);
+
+// File Upload
+$client = GeminiClient::factory()
+                              ->withApiKey(config('gemini.API_KEY'))
+                              ->withBaseUrl('https://generativelanguage.googleapis.com/')
+                              ->make();
+
+$response = $client->fileManager()->uploadFile('/tmp/test.png', 'test.png', 'image/png');
+```
+
+### NOTE
+
+All modifications are done as some kind of "hack", code quality was not the first prio,
+I just wanted to have something that works. There is much room for improvement.
+
+
+----
+
 <p align="center">
     <img src="https://raw.githubusercontent.com/google-gemini-php/client/main/art/example.png" width="600" alt="Google Gemini PHP">
     <p align="center">

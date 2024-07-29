@@ -21,6 +21,7 @@
   ],
   "require": {
     "php": "^8.1.0",
+    "ext-fileinfo": "*",
     "php-http/discovery": "^1.19.2"
   },
   "require-dev": {

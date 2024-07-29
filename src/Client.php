@@ -12,6 +12,7 @@ use Gemini\Resources\ChatSession;
 use Gemini\Resources\EmbeddingModel;
 use Gemini\Resources\GenerativeModel;
 use Gemini\Resources\Models;
+use Gemini\Resources\FileManager;
 
 final class Client implements ClientContract
 {
@@ -22,6 +23,11 @@ final class Client implements ClientContract
     {
     }
 
+    public function fileManager(): FileManager
+    {
+        return new FileManager($this->transporter);
+    }
+
     /**
      *  Lists available models.
      */
@@ -30,9 +36,9 @@ final class Client implements ClientContract
         return new Models(transporter: $this->transporter);
     }
 
-    public function generativeModel(ModelType|string $model): GenerativeModel
+    public function generativeModel(ModelType|string $model, string $systemInstruction = NULL): GenerativeModel
     {
-        return new GenerativeModel(transporter: $this->transporter, model: $model);
+        return new GenerativeModel(transporter: $this->transporter, model: $model, systemInstruction: $systemInstruction);
     }
 
     public function geminiPro(): GenerativeModel

@@ -39,7 +39,7 @@ class EmbedContentRequest extends Request
      *
      * @return array<string, mixed>
      */
-    protected function defaultBody(): array
+    public function defaultBody(): array
     {
         return [
             'content' => Content::parse(part: $this->part)->toArray(),

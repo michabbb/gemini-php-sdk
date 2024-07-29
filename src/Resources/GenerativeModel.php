@@ -27,15 +27,18 @@ final class GenerativeModel implements GenerativeModelContract
     private readonly string $model;
 
     /**
-     * @param  array<SafetySetting>  $safetySettings
+     * @param array<SafetySetting> $safetySettings
      */
     public function __construct(
         private readonly TransporterContract $transporter,
-        ModelType|string $model,
-        public array $safetySettings = [],
-        public ?GenerationConfig $generationConfig = null,
-    ) {
-        $this->model = $this->parseModel(model: $model);
+        ModelType|string                     $model,
+        public array                         $safetySettings = [],
+        public ?GenerationConfig             $generationConfig = null,
+        public ?string                       $systemInstruction = null,
+    )
+    {
+        $this->model             = $this->parseModel(model: $model);
+        $this->systemInstruction = $systemInstruction;
     }
 
     public function withSafetySetting(SafetySetting $safetySetting): self
@@ -57,7 +60,7 @@ final class GenerativeModel implements GenerativeModelContract
      *
      * @see https://ai.google.dev/api/rest/v1/models/countTokens
      *
-     * @param  string|Blob|array<string|Blob>|Content  ...$parts
+     * @param string|Blob|array<string|Blob>|Content ...$parts
      *
      * @throws \Exception
      */
@@ -79,11 +82,12 @@ final class GenerativeModel implements GenerativeModelContract
         /** @var ResponseDTO<array{ candidates: ?array{ array{ content: array{ parts: array{ array{ text: ?string, inlineData: array{ mimeType: string, data: string } } }, role: string }, finishReason: string, safetyRatings: array{ array{ category: string, probability: string, blocked: ?bool } }, citationMetadata: ?array{ citationSources: array{ array{ startIndex: int, endIndex: int, uri: string, license: string} } }, index: int, tokenCount: ?int } }, promptFeedback: ?array{ safetyRatings: array{ array{ category: string, probability: string, blocked: ?bool } }, blockReason: ?string } }> $response */
         $response = $this->transporter->request(
             request: new GenerateContentRequest(
-                model: $this->model,
-                parts: $parts,
-                safetySettings: $this->safetySettings,
-                generationConfig: $this->generationConfig,
-            )
+                         model            : $this->model,
+                         parts            : $parts,
+                         safetySettings   : $this->safetySettings,
+                         generationConfig : $this->generationConfig,
+                         systemInstruction: $this->systemInstruction,
+                     )
         );
 
         return GenerateContentResponse::from($response->data());
@@ -98,18 +102,18 @@ final class GenerativeModel implements GenerativeModelContract
     {
         $response = $this->transporter->requestStream(
             request: new StreamGenerateContentRequest(
-                model: $this->model,
-                parts: $parts,
-                safetySettings: $this->safetySettings,
-                generationConfig: $this->generationConfig,
-            )
+                         model           : $this->model,
+                         parts           : $parts,
+                         safetySettings  : $this->safetySettings,
+                         generationConfig: $this->generationConfig,
+                     )
         );
 
         return new StreamResponse(responseClass: GenerateContentResponse::class, response: $response);
     }
 
     /**
-     * @param  array<Content>  $history
+     * @param array<Content> $history
      */
     public function startChat(array $history = []): ChatSession
     {

@@ -22,16 +22,17 @@ final class HttpTransporter implements TransporterContract
     /**
      * Creates a new Http Transporter instance.
      *
-     * @param  array<string, string>  $headers
-     * @param  array<string, string|int>  $queryParams
+     * @param array<string, string> $headers
+     * @param array<string, string|int> $queryParams
      */
     public function __construct(
         private readonly ClientInterface $client,
-        private readonly string $baseUrl,
-        private readonly array $headers,
-        private readonly array $queryParams,
-        private readonly Closure $streamHandler,
-    ) {
+        private readonly string          $baseUrl,
+        private readonly array           $headers,
+        private readonly array           $queryParams,
+        private readonly Closure         $streamHandler,
+    )
+    {
         // ..
     }
 
@@ -40,8 +41,32 @@ final class HttpTransporter implements TransporterContract
      */
     public function request(Request $request): ResponseDTO
     {
+        $options = [];
+
+        if (method_exists($request, 'getHeaders')) {
+            $options['headers'] = array_merge($this->headers, $request->getHeaders());
+        } else {
+            $options['headers'] = $this->headers;
+        }
+
+        if (method_exists($request, 'getQuery')) {
+            $options['query'] = array_merge($this->headers, $request->getQuery());
+        } else {
+            $options['query'] = $this->queryParams;
+        }
+
+        if (method_exists($request, 'getBody')) {
+            $options['body'] = $request->getBody();
+        } elseif (method_exists($request, 'defaultBody')) {
+            $options['json'] = $request->defaultBody();
+        }
+
         $response = $this->sendRequest(
-            fn (): ResponseInterface => $this->client->sendRequest(request: $request->toRequest(baseUrl: $this->baseUrl, headers: $this->headers, queryParams: $this->queryParams))
+            fn(): ResponseInterface => $this->client->request(
+                $request->getMethod()->value,
+                $this->baseUrl . $request->resolveEndpoint(),
+                $options
+            )
         );
 
         $contents = $response->getBody()->getContents();
@@ -65,7 +90,7 @@ final class HttpTransporter implements TransporterContract
     public function requestStream(Request $request): ResponseInterface
     {
         $response = $this->sendRequest(
-            fn (): ResponseInterface => ($this->streamHandler)($request->toRequest(baseUrl: $this->baseUrl, headers: $this->headers, queryParams: $this->queryParams))
+            fn(): ResponseInterface => ($this->streamHandler)($request->toRequest(baseUrl: $this->baseUrl, headers: $this->headers, queryParams: $this->queryParams))
         );
 
         $this->throwIfJsonError(response: $response, contents: $response);

@@ -46,7 +46,7 @@ class StreamGenerateContentRequest extends Request
      *
      * @return array<string, mixed>
      */
-    protected function defaultBody(): array
+    public function defaultBody(): array
     {
         return [
             'contents' => array_map(
