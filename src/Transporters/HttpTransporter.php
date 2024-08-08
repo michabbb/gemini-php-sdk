@@ -41,32 +41,8 @@ final class HttpTransporter implements TransporterContract
      */
     public function request(Request $request): ResponseDTO
     {
-        $options = [];
-
-        if (method_exists($request, 'getHeaders')) {
-            $options['headers'] = array_merge($this->headers, $request->getHeaders());
-        } else {
-            $options['headers'] = $this->headers;
-        }
-
-        if (method_exists($request, 'getQuery')) {
-            $options['query'] = array_merge($this->headers, $request->getQuery());
-        } else {
-            $options['query'] = $this->queryParams;
-        }
-
-        if (method_exists($request, 'getBody')) {
-            $options['body'] = $request->getBody();
-        } elseif (method_exists($request, 'defaultBody')) {
-            $options['json'] = $request->defaultBody();
-        }
-
         $response = $this->sendRequest(
-            fn(): ResponseInterface => $this->client->request(
-                $request->getMethod()->value,
-                $this->baseUrl . $request->resolveEndpoint(),
-                $options
-            )
+            fn (): ResponseInterface => $this->client->sendRequest(request: $request->toRequest(baseUrl: $this->baseUrl, headers: $this->headers, queryParams: $this->queryParams))
         );
 
         $contents = $response->getBody()->getContents();
