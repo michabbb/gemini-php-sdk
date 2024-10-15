@@ -24,7 +24,7 @@ abstract class Request
      */
     public function getMethod(): Method
     {
-        if (! isset($this->method)) {
+        if (!isset($this->method)) {
             throw new LogicException('Your request is missing a HTTP method. You must add a method property like [protected Method $method = Method::GET]');
         }
 
@@ -47,8 +47,8 @@ abstract class Request
     abstract public function resolveEndpoint(): string;
 
     /**
-     * @param  array<string, array<string>|string>  $headers
-     * @param  array<string, mixed>  $queryParams
+     * @param array<string, array<string>|string> $headers
+     * @param array<string, mixed> $queryParams
      *
      * @throws \JsonException
      */
@@ -56,16 +56,16 @@ abstract class Request
     {
         $psr17Factory = new Psr17Factory();
 
-        $uri = $baseUrl.$this->resolveEndpoint();
+        $uri = $baseUrl . $this->resolveEndpoint();
 
         $query = $this->defaultQuery();
 
-        if ($this->method === Method::GET) {
-            $query = [...$query, $queryParams];
+        if (count($queryParams)) {
+            $query = [...$query, ...$queryParams];
         }
 
         if ($query !== []) {
-            $uri .= '?'.http_build_query($query);
+            $uri .= '?' . http_build_query($query);
         }
 
         $body = null;
@@ -73,7 +73,7 @@ abstract class Request
         if ($this->method === Method::POST) {
             $parameters = match (true) {
                 method_exists($this, 'body') => $this->body(),
-                default => [],
+                default                      => [],
             };
 
             $body = $psr17Factory->createStream(json_encode($parameters, JSON_THROW_ON_ERROR));

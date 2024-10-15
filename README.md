@@ -8,22 +8,34 @@
 
 ### Examples:
 ```php
-$client     = GeminiClient::factory()
-                      ->withApiKey(config('gemini.API_KEY'))
-                      ->withBaseUrl(config('gemini.API_BASE_URL'))
-                      ->make();
-$result     = $client
-                    ->generativeModel('gemini-1.5-flash')
-                    ->withGenerationConfig(new GenerationConfig(responseMimeType: 'application/json'))
-                    ->generateContent($promptText);
+include 'vendor/autoload.php';
 
-// File Upload
-$client = GeminiClient::factory()
-                              ->withApiKey(config('gemini.API_KEY'))
-                              ->withBaseUrl('https://generativelanguage.googleapis.com/')
-                              ->make();
+use Gemini\Data\FileData;
+use Gemini\Data\GenerationConfig;
 
-$response = $client->fileManager()->uploadFile('/tmp/test.png', 'test.png', 'image/png');
+$client = Gemini::factory()
+                ->withApiKey('xxxxxxxxxxxx')
+                ->withBaseUrl('https://generativelanguage.googleapis.com/') // <--- important !!!!
+                ->make();
+
+$uploadedFile = $client->fileManager()->uploadFile('/tmp/some.pdf', 'some.pdf', 'application/pdf');
+
+print_r($uploadedFile);
+
+$client = Gemini::factory()
+                ->withApiKey('xxxxxxxxxxxxxx')
+                ->withBaseUrl('https://generativelanguage.googleapis.com/v1beta/') // <--- important !!!!
+                ->make();
+
+$result = $client
+    ->generativeModel('gemini-1.5-flash-002','')
+    ->withGenerationConfig(new GenerationConfig(responseMimeType: 'application/json'))
+    ->generateContent([
+                      'give me the text of the file some.pdf',
+                      new FileData('application/pdf', $uploadedFile->uri)
+                  ]);
+
+print_r($result->text());
 ```
 
 ### NOTE

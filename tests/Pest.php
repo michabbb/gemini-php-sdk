@@ -24,14 +24,12 @@ function mockClient(Method $method, string $endpoint, ResponseDTO|ResponseContra
             $psrRequest = $request->toRequest(baseUrl: 'https://generativelanguage.googleapis.com/v1/');
 
             if ($validateParams) {
-                if (in_array($method, [Method::GET, Method::DELETE])) {
+                if (in_array($method, [Method::GET, Method::DELETE], true)) {
                     if ($psrRequest->getUri()->getQuery() !== http_build_query($params)) {
                         return false;
                     }
-                } else {
-                    if ($psrRequest->getBody()->getContents() !== json_encode($params)) {
-                        return false;
-                    }
+                } else if ($psrRequest->getBody()->getContents() !== json_encode($params, JSON_THROW_ON_ERROR)) {
+                    return false;
                 }
             }
 

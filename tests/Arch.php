@@ -39,3 +39,7 @@ test('transporters')
     ->expect('Gemini\Transporters')
     ->toImplement(TransporterContract::class)
     ->ignoring('Gemini\Transporters\DTOs');
+
+test('globals')
+    ->expect(['dd', 'ddd', 'die', 'dump', 'ray', 'sleep','print_r','var_dump'])
+    ->toBeUsedInNothing();

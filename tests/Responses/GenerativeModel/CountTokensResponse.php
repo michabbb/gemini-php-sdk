@@ -1,4 +1,6 @@
-<?php
+<?php /** @noinspection UnknownInspectionInspection */
+
+/** @noinspection StaticClosureCanBeUsedInspection */
 
 use Gemini\Responses\GenerativeModel\CountTokensResponse;
 
@@ -19,7 +21,7 @@ test('fake', function () {
 
 test('to array', function () {
     $attributes = CountTokensResponse::fake()->toArray();
-    $response = CountTokensResponse::from($attributes);
+    $response   = CountTokensResponse::from($attributes);
 
     expect($response->toArray())
         ->toBeArray()
@@ -28,8 +30,8 @@ test('to array', function () {
 
 test('fake with override', function () {
     $response = CountTokensResponse::fake([
-        'totalTokens' => 10,
-    ]);
+                                              'totalTokens' => 10,
+                                          ]);
 
     expect($response)
         ->totalTokens->toBe(10);

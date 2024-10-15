@@ -38,30 +38,30 @@ final class Candidate implements Arrayable
      */
     public static function from(array $attributes): self
     {
-        $safetyRatings = match (true) {
-            isset($attributes['safetyRatings']) => array_map(
+        $safetyRatings = [];
+        if (isset($attributes['safetyRatings']) && is_array($attributes['safetyRatings'])) {
+            $safetyRatings = array_map(
                 static fn (array $rating): SafetyRating => SafetyRating::from($rating),
-                $attributes['safetyRatings'],
-            ),
-            default => [],
-        };
-
-        $citationMetadata = match (true) {
-            isset($attributes['citationMetadata']) => CitationMetadata::from($attributes['citationMetadata']),
-            default => new CitationMetadata(),
-        };
-
-        $content = match (true) {
-            isset($attributes['content']) => Content::from($attributes['content']),
-            default => new Content(parts: [], role: Role::MODEL),
-        };
-
+                $attributes['safetyRatings']
+            );
+        }
+    
+        $citationMetadata = new CitationMetadata();
+        if (isset($attributes['citationMetadata']) && is_array($attributes['citationMetadata'])) {
+            $citationMetadata = CitationMetadata::from($attributes['citationMetadata']);
+        }
+    
+        $content = new Content(parts: [], role: Role::MODEL);
+        if (isset($attributes['content']) && is_array($attributes['content'])) {
+            $content = Content::from($attributes['content']);
+        }
+    
         return new self(
             content: $content,
-            finishReason: FinishReason::from($attributes['finishReason']),
+            finishReason: FinishReason::from($attributes['finishReason'] ?? ''),
             safetyRatings: $safetyRatings,
             citationMetadata: $citationMetadata,
-            index: $attributes['index'],
+            index: $attributes['index'] ?? 0,
             tokenCount: $attributes['tokenCount'] ?? null,
         );
     }

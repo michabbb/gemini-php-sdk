@@ -18,6 +18,9 @@ trait Testable
 
     abstract protected function resource(): string;
 
+    /**
+     * @throws \Throwable
+     */
     protected function record(string $method, array $args = [], ModelType|string|null $model = null): ResponseContract|StreamResponse
     {
         return $this->fake->record(new TestRequest(resource: $this->resource(), method: $method, args: $args, model: $model));

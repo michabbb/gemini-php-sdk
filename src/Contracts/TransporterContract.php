@@ -8,6 +8,7 @@ use Gemini\Exceptions\ErrorException;
 use Gemini\Exceptions\TransporterException;
 use Gemini\Exceptions\UnserializableResponse;
 use Gemini\Foundation\Request;
+use Gemini\Requests\FileManager\UploadFileRequest;
 use Gemini\Transporters\DTOs\ResponseDTO;
 use JsonException;
 use Psr\Http\Message\ResponseInterface;
@@ -21,7 +22,7 @@ interface TransporterContract
      *
      * @throws ErrorException|JsonException|UnserializableResponse|TransporterException
      */
-    public function request(Request $request): ResponseDTO;
+    public function request(Request|UploadFileRequest $request): ResponseDTO;
 
     /**
      * Sends a stream request to a server.

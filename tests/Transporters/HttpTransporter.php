@@ -1,4 +1,6 @@
-<?php
+<?php /** @noinspection UnknownInspectionInspection */
+
+/** @noinspection PhpUnhandledExceptionInspection */
 
 use Gemini\Enums\ModelType;
 use Gemini\Exceptions\ErrorException;
@@ -37,8 +39,8 @@ test('request', function () {
     $request = new ListModelRequest();
 
     $response = new Response(200, ['Content-Type' => 'application/json; charset=utf-8'], json_encode([
-        'test',
-    ]));
+                                                                                                         'test',
+                                                                                                     ], JSON_THROW_ON_ERROR));
 
     $this->client
         ->shouldReceive('sendRequest')
@@ -60,7 +62,7 @@ test('request response', function () {
     $request = new ListModelRequest();
 
     $data = ListModelResponse::fake()->toArray();
-    $response = new Response(200, ['Content-Type' => 'application/json; charset=utf-8'], json_encode($data, JSON_PRESERVE_ZERO_FRACTION));
+    $response = new Response(200, ['Content-Type' => 'application/json; charset=utf-8'], json_encode($data, JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION));
 
     $this->client
         ->shouldReceive('sendRequest')
@@ -76,13 +78,13 @@ test('request server user errors', function () {
     $request = new ListModelRequest();
 
     $response = new Response(400, ['Content-Type' => 'application/json; charset=utf-8'], json_encode([
-        'error' => [
-            'code' => 400,
-            'message' => 'API key not valid. Please pass a valid API key.',
-            'status' => 'INVALID_ARGUMENT',
-            'details' => [],
-        ],
-    ]));
+                                                                                                         'error' => [
+                                                                                                             'code' => 400,
+                                                                                                                                                                                                                                                                                           'message' => 'API key not valid. Please pass a valid API key.',
+                                                                                                                                                                                                                                                                                                                                                       'status' => 'INVALID_ARGUMENT',
+                                                                                                                                                                                                                                                                                                                                                                                  'details' => [],
+                                                                                                         ],
+                                                                                                     ], JSON_THROW_ON_ERROR));
 
     $this->client
         ->shouldReceive('sendRequest')
@@ -104,13 +106,13 @@ test('request server errors', function () {
         parts: ['Test']
     );
     $response = new Response(400, ['Content-Type' => 'application/json'], json_encode([
-        'error' => [
-            'message' => 'Invalid JSON payload received. Unknown name \"contents2\": Cannot find field.',
-            'status' => 'INVALID_ARGUMENT',
-            'code' => 400,
-            'details' => [],
-        ],
-    ]));
+                                                                                          'error' => [
+                                                                                              'message' => 'Invalid JSON payload received. Unknown name \"contents2\": Cannot find field.',
+                                                                                              'status'  => 'INVALID_ARGUMENT',
+                                                                                              'code'    => 400,
+                                                                                              'details' => [],
+                                                                                          ],
+                                                                                      ], JSON_THROW_ON_ERROR));
 
     $this->client
         ->shouldReceive('sendRequest')
@@ -162,8 +164,8 @@ test('request stream', function () {
     );
 
     $response = new Response(200, [], json_encode([
-        'qdwq',
-    ]));
+                                                      'qdwq',
+                                                  ], JSON_THROW_ON_ERROR));
 
     $this->client
         ->shouldReceive('sendAsyncRequest')
@@ -191,13 +193,13 @@ test('request stream server errors', function () {
     );
 
     $response = new Response(400, ['Content-Type' => 'application/json; charset=utf-8'], json_encode([
-        'error' => [
-            'code' => 400,
-            'message' => 'API key not valid. Please pass a valid API key.',
-            'status' => 'INVALID_ARGUMENT',
-            'details' => [],
-        ],
-    ]));
+                                                                                                         'error' => [
+                                                                                                             'code' => 400,
+                                                                                                                                                                                                                                                                                           'message' => 'API key not valid. Please pass a valid API key.',
+                                                                                                                                                                                                                                                                                                                                                       'status' => 'INVALID_ARGUMENT',
+                                                                                                                                                                                                                                                                                                                                                                                  'details' => [],
+                                                                                                         ],
+                                                                                                     ], JSON_THROW_ON_ERROR));
 
     $this->client
         ->shouldReceive('sendAsyncRequest')

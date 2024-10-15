@@ -1,16 +1,19 @@
-<?php
+<?php /** @noinspection UnknownInspectionInspection */
 
 declare(strict_types=1);
 
 namespace Gemini\Testing;
 
+use Gemini\Contracts\Arrayable;
 use Gemini\Contracts\ClientContract;
 use Gemini\Contracts\ResponseContract;
 use Gemini\Enums\ModelType;
+use Gemini\Exceptions\ErrorException;
 use Gemini\Responses\StreamResponse;
 use Gemini\Testing\Requests\TestRequest;
 use Gemini\Testing\Resources\ChatSessionTestResource;
 use Gemini\Testing\Resources\EmbeddingModelTestResource;
+use Gemini\Testing\Resources\FileManagerTestResource;
 use Gemini\Testing\Resources\GenerativeModelTestResource;
 use Gemini\Testing\Resources\ModelTestResource;
 use PHPUnit\Framework\Assert as PHPUnit;
@@ -24,11 +27,17 @@ class ClientFake implements ClientContract
     private array $requests = [];
 
     /**
-     * @param  array<array-key, ResponseContract>  $responses
+     * @param  array<array-key, ResponseContract|ErrorException>  $responses
      */
     public function __construct(protected array $responses = [])
     {
     }
+
+    public function fileManager(): FileManagerTestResource
+    {
+        return new FileManagerTestResource($this);
+    }
+
 
     /**
      * @param  array<array-key, ResponseContract>  $responses
@@ -110,13 +119,14 @@ class ClientFake implements ClientContract
     /**
      * @throws Throwable
      */
-    public function record(TestRequest $request): ResponseContract|StreamResponse
+    public function record(TestRequest $request): ResponseContract|StreamResponse|Arrayable
     {
         $this->requests[] = $request;
 
         $response = array_shift($this->responses);
 
         if (is_null($response)) {
+            /** @noinspection ThrowRawExceptionInspection */
             throw new \Exception('No fake responses left.');
         }
 

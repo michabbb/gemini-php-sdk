@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection UnknownInspectionInspection */
+/** @noinspection StaticClosureCanBeUsedInspection */
 
 declare(strict_types=1);
 
@@ -103,7 +104,7 @@ it('asserts a request was sent', function () {
 
     $fake->geminiPro()->generateContent('test');
 
-    $fake->assertSent(resource: GenerativeModel::class, model: ModelType::GEMINI_PRO, callback: function (string $method, array $parameters) {
+    $fake->assertSent(resource: GenerativeModel::class, model: ModelType::GEMINI_PRO, callback: function (string $method) {
         return $method === 'generateContent';
     });
 });
